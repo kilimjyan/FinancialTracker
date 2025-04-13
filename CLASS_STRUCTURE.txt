@@ -1,0 +1,7 @@
+Class1 : User, where the user can see inormation about their account
+Class2 : Accounts, where the user sees the different types of accounts 
+Class3 : Expense, where the user monitors their expenses
+Class4 : Savings Account, where the user tracks their savings
+Class5 : Budget, where the user tracks their spending
+Class6 : Report, where the user sees their monthly or yearly reports
+Class7 : Investments, where the user tracks their investments
