@@ -1,56 +1,21 @@
-Financial Tracker - Class Structure
-
-1. Main Classes
-   ├── FinancialTrackerGUI (extends JFrame)
-   │   ├── Main GUI implementation
-   │   ├── Handles user interface and interactions
-   │   └── Manages transactions and user input
-   │
-   └── FinancialTrackerDemo
-       ├── Console-based implementation
-       └── Alternative interface for the application
-
-2. Models
-   ├── User
-   │   └── Manages user information and payment methods
-   │
-   ├── Transaction
-   │   ├── Properties: transactionID, paymentType, amount, date, type, status
-   │   ├── Methods: executeTransaction(), executeSave()
-   │   └── Status: PENDING, SUCCESSFUL, FAILED
-   │
-   └── PaymentType (Abstract)
-       ├── Properties: income, expense, savings, balance, tax, commission, cashback
-       ├── Abstract Methods: add(), deduct(), save()
-       │
-       ├── Cash (extends PaymentType)
-       │   └── Simple cash transactions
-       │
-       ├── BankTransfer (extends PaymentType)
-       │   ├── Handles bank transfers
-       │   └── Includes tax calculations
-       │
-       └── CreditCard (extends PaymentType)
-           ├── Properties: bankName, creditCardId
-           └── Includes cashback calculations
-
-3. Services
-   └── ReportingService
-       └── Generates monthly reports and transaction summaries
-
-4. Utils
-   └── CSVUtil
-       └── Handles CSV file operations for transaction export
-
-5. Exceptions
-   └── CSVExportException
-       └── Handles CSV export-related errors
-
-Key Features:
-- GUI and Console interfaces
-- Multiple payment methods (Cash, Bank Transfer, Credit Card)
-- Transaction tracking and management
-- Monthly reporting
-- CSV export functionality
-- Tax and cashback calculations
-- Savings management
+src/
+├── FinancialTracker/
+│   ├── FinancialTrackerDemo.java    # CLI version
+│   ├── FinancialTrackerGUI.java     # GUI version
+│   └── Main.java                    # Main entry point
+├── models/
+│   ├── PaymentType.java             # Abstract payment class
+│   ├── BankTransfer.java            # Bank transfer implementation
+│   ├── CreditCard.java              # Credit card implementation
+│   ├── Cash.java                    # Cash implementation
+│   ├── Transaction.java             # Transaction handling
+│   └── User.java                    # User management
+├── exceptions/
+│   ├── FinancialTrackerException.java
+│   ├── InsufficientFundsException.java
+│   ├── ValidationException.java
+│   └── CSVExportException.java
+├── services/
+│   └── ReportingService.java        # Financial reporting
+└── utils/
+    └── CSVUtil.java                 # CSV export functionality
