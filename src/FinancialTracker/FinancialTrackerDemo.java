@@ -1,6 +1,10 @@
 package FinancialTracker;
 
+import exceptions.FinancialTrackerException;
+import exceptions.InsufficientFundsException;
+import exceptions.ValidationException;
 import models.*;
+import services.ReportingService;
 import utils.CSVUtil;
 
 import java.time.LocalDate;
@@ -121,7 +125,6 @@ public class FinancialTrackerDemo {
             String paymentMethodInput = scanner.next();
             PaymentType selectedPaymentMethod = null;
 
-
             if (paymentMethodInput.equalsIgnoreCase("CARD")) {
                 ArrayList<PaymentType> creditCards = new ArrayList<>();
                 for (PaymentType method : user.getPaymentMethods()) {
@@ -164,12 +167,20 @@ public class FinancialTrackerDemo {
                 return;
             }
             Transaction transaction = new Transaction("TXN" + System.currentTimeMillis(), selectedPaymentMethod, amount);
-            transaction.executeTransaction(isExpense);
-            transaction.setType(action);
-            transactions.add(transaction);
+            try {
+                transaction.executeTransaction(isExpense);
+                transaction.setType(action);
+                transactions.add(transaction);
 
-            if(transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL)
-                System.out.println("Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + (isExpense ? "from " : "to ") + paymentMethodInput);
+                if(transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL)
+                    System.out.println("Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + (isExpense ? "from " : "to ") + paymentMethodInput);
+            } catch (InsufficientFundsException e) {
+                System.err.println("Transaction failed: " + e.getMessage());
+            } catch (ValidationException e) {
+                System.err.println("Transaction failed: " + e.getMessage());
+            } catch (FinancialTrackerException e) {
+                System.err.println("Transaction failed: " + e.getMessage());
+            }
         } catch (InputMismatchException e) {
             System.err.println("Invalid input. Transaction canceled.");
             scanner.next();

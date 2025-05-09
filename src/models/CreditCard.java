@@ -1,5 +1,7 @@
 package models;
 
+import exceptions.InsufficientFundsException;
+
 public class CreditCard extends PaymentType {
     private String bankName;
     private String creditCardId;
@@ -47,20 +49,32 @@ public class CreditCard extends PaymentType {
     }
 
 
+    public CreditCard(CreditCard other) {
+        super();
+        this.bankName = other.bankName;
+        this.creditCardId = other.creditCardId;
+        this.cashback = other.cashback;
+        this.totalCashback = other.totalCashback;
+        this.setBalance(other.getBalance());
+        this.setIncome(other.getIncome());
+        this.setExpense(other.getExpense());
+        this.setSavings(other.getSavings());
+    }
+
     @Override
     public void add(int money) {
         setIncome(getIncome() + money);
         setBalance(getBalance() + money);
     }
     @Override
-    public void deduct(int money) {
+    public void deduct(int money) throws InsufficientFundsException {
         if (getBalance() < money) {
-            throw new IllegalStateException("Not enough funds to deduct");
+            throw new InsufficientFundsException("Not enough funds to deduct");
         }
         if (money > 50000) {
-            setExpense(getExpense() + money - generateCashback(money));
-            setCashback(0);
-            setBalance(getBalance() - (int) (money * 0.95));
+            int cashbackAmount = generateCashback(money);
+            setExpense(getExpense() + money - cashbackAmount);
+            setBalance(getBalance() - (money - cashbackAmount));
         } else {
             setExpense(getExpense() + money);
             setBalance(getBalance() - money);
@@ -68,9 +82,9 @@ public class CreditCard extends PaymentType {
     }
 
     @Override
-    public void save(int money) {
+    public void save(int money) throws InsufficientFundsException {
         if (getBalance() < money) {
-            throw new IllegalStateException("Not enough funds to save");
+            throw new InsufficientFundsException("Not enough funds to save");
         }
         setSavings(getSavings() + money);
         setBalance(getBalance() - money);
@@ -84,10 +98,12 @@ public class CreditCard extends PaymentType {
 
     public int generateCashback(int money) {
         if (money > 50000) {
-            setCashback(getCashback() + (int) (money * 0.03));
-            totalCashback += getCashback();
+            int cashbackAmount = (int) (money * 0.03);
+            setCashback(cashbackAmount);
+            totalCashback += cashbackAmount;
+            return cashbackAmount;
         }
-        return getCashback();
+        return 0;
     }
 
     @Override
@@ -99,5 +115,20 @@ public class CreditCard extends PaymentType {
         System.out.println("Cashback: " + totalCashback);
     }
 
+    @Override
+    public boolean equals(Object otherObject) {
+        if (otherObject == null)
+            return false;
+        else if (getClass() != otherObject.getClass())
+            return false;
+        else {
+            CreditCard otherCreditCard = (CreditCard)otherObject;
+            return (super.equals(otherObject)
+                    && bankName.equals(otherCreditCard.bankName)
+                    && creditCardId.equals(otherCreditCard.creditCardId)
+                    && cashback == otherCreditCard.cashback
+                    && totalCashback == otherCreditCard.totalCashback);
+        }
+    }
 
 }

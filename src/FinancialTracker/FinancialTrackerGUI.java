@@ -1,7 +1,11 @@
 package FinancialTracker;
 
 import exceptions.CSVExportException;
+import exceptions.FinancialTrackerException;
+import exceptions.InsufficientFundsException;
+import exceptions.ValidationException;
 import models.*;
+import services.ReportingService;
 import utils.CSVUtil;
 
 import javax.swing.*;
@@ -9,7 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-
 public class FinancialTrackerGUI extends JFrame {
     private JTextField usernameField;
     private JTextField emailField;
@@ -112,8 +115,7 @@ public class FinancialTrackerGUI extends JFrame {
         try {
             int amount = Integer.parseInt(amountStr);
             if (amount <= 0) {
-                JOptionPane.showMessageDialog(this, "Amount must be greater than zero.");
-                return;
+                throw new ValidationException("Amount must be greater than zero.");
             }
 
             Transaction transaction = new Transaction("TXN" + System.currentTimeMillis(), selectedPaymentMethod, amount);
@@ -127,8 +129,12 @@ public class FinancialTrackerGUI extends JFrame {
             }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Invalid amount. Please enter a valid number.");
-        } catch (IllegalStateException e) {
+        } catch (ValidationException e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
+        } catch (InsufficientFundsException e) {
+            JOptionPane.showMessageDialog(this, "Transaction failed: " + e.getMessage());
+        } catch (FinancialTrackerException e) {
+            JOptionPane.showMessageDialog(this, "Transaction failed: " + e.getMessage());
         }
     }
 
@@ -245,19 +251,25 @@ public class FinancialTrackerGUI extends JFrame {
     }
 
     private boolean isEmailValid(String mail) {
-        if (!(mail.contains("."))) {
+        if (mail == null || mail.isEmpty()) {
             return false;
         }
-        if (!(mail.contains("@"))) {
+        if (!mail.contains(".")) {
+            return false;
+        }
+        if (!mail.contains("@")) {
             return false;
         }
         int indexAt = mail.lastIndexOf("@");
         int indexDot = mail.lastIndexOf(".");
-        if ((mail.substring(0, indexAt)).isEmpty() || (mail.substring(indexAt + 1, indexDot)).isEmpty()
-                || (mail.substring(indexDot + 1)).isEmpty()) {
+        if (indexAt == -1 || indexDot == -1 || indexAt >= indexDot) {
             return false;
         }
-        return true;
+        String localPart = mail.substring(0, indexAt);
+        String domain = mail.substring(indexAt + 1, indexDot);
+        String tld = mail.substring(indexDot + 1);
+
+        return !localPart.isEmpty() && !domain.isEmpty() && !tld.isEmpty();
     }
 
     public static void main(String[] args) {
@@ -269,5 +281,3 @@ public class FinancialTrackerGUI extends JFrame {
         });
     }
 }
-
-

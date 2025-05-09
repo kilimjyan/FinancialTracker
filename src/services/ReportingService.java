@@ -1,12 +1,13 @@
 package services;
-import java.util.*;
+
 import models.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.ArrayList;
 
 
 public class ReportingService {
-    public void generateMonthlyReport(List<Transaction> transactions, User user) {
+    public void generateMonthlyReport(ArrayList<Transaction> transactions, User user) {
         StringBuilder report = new StringBuilder();
         report.append("Monthly Report by Payment Method\n");
         report.append("---------------------------------\n");

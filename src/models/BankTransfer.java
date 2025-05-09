@@ -1,8 +1,14 @@
 package models;
 
+import exceptions.InsufficientFundsException;
+
 public class BankTransfer extends PaymentType {
     private int tax;
     private int totalTax;
+
+    public BankTransfer() {
+        super();
+    }
 
     public int getTotalTax() {
         return totalTax;
@@ -21,6 +27,16 @@ public class BankTransfer extends PaymentType {
     }
 
 
+    public BankTransfer(BankTransfer other) {
+        super();
+        this.tax = other.tax;
+        this.totalTax = other.totalTax;
+        this.setBalance(other.getBalance());
+        this.setIncome(other.getIncome());
+        this.setExpense(other.getExpense());
+        this.setSavings(other.getSavings());
+    }
+
     @Override
     public void add(int money) {
         setIncome(getIncome() + money - generateTax(money));
@@ -29,9 +45,9 @@ public class BankTransfer extends PaymentType {
     }
 
     @Override
-    public void deduct(int money) {
+    public void deduct(int money) throws InsufficientFundsException {
         if (getBalance() < money + generateTax(money)) {
-            throw new IllegalStateException("Not enough funds to deduct");
+            throw new InsufficientFundsException("Not enough funds to deduct");
         }
         setExpense(getExpense() + money + generateTax(money));
         setTax(0);
@@ -39,9 +55,9 @@ public class BankTransfer extends PaymentType {
     }
 
     @Override
-    public void save(int money) {
+    public void save(int money) throws InsufficientFundsException {
         if (getBalance() < money) {
-            throw new IllegalStateException("Not enough funds to save");
+            throw new InsufficientFundsException("Not enough funds to save");
         }
         setSavings(getSavings() + money);
         setBalance(getBalance() - money);
@@ -59,16 +75,26 @@ public class BankTransfer extends PaymentType {
         }
         return getTax();
     }
-     @Override
-     public void printCurrentBalance() {
-         System.out.println("Current balance: " + getBalance());
-         System.out.println("Income: " + getIncome());
-         System.out.println("Expense: " + getExpense());
-         System.out.println("Savings: " + getSavings());
-         System.out.println("Tax: " + totalTax);
-     }
+    @Override
+    public void printCurrentBalance() {
+        System.out.println("Current balance: " + getBalance());
+        System.out.println("Income: " + getIncome());
+        System.out.println("Expense: " + getExpense());
+        System.out.println("Savings: " + getSavings());
+        System.out.println("Tax: " + totalTax);
+    }
 
-
-
-
+    @Override
+    public boolean equals(Object otherObject) {
+        if (otherObject == null)
+            return false;
+        else if (getClass() != otherObject.getClass())
+            return false;
+        else {
+            BankTransfer otherBankTransfer = (BankTransfer)otherObject;
+            return (super.equals(otherObject)
+                    && tax == otherBankTransfer.tax
+                    && totalTax == otherBankTransfer.totalTax);
+        }
+    }
 }

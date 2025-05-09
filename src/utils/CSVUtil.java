@@ -1,14 +1,15 @@
 package utils;
 
 import exceptions.CSVExportException;
+import models.Transaction;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.List;
 
 public class CSVUtil {
-    public static void writeTransactionsToCSV(ArrayList<Transaction> transactions, String fileName) throws CSVExportException {
+    public static void writeTransactionsToCSV(List<Transaction> transactions, String fileName) throws CSVExportException {
         if (transactions == null || transactions.isEmpty()) {
             throw new CSVExportException("No transactions available to export.");
         }
