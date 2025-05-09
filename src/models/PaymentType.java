@@ -1,31 +1,11 @@
+package models;
+
 public abstract class PaymentType {
     private int income;
     private int expense;
     private int savings;
     private int balance;
-    private int cashback;
-    private int tax;
-    private int commission;
 
-    public void setTax(int tax) {
-        this.tax = tax;
-    }
-
-    public int getTax() {
-        return tax;
-    }
-    public void setCommission(int tax) {
-        this.tax = tax;
-    }
-
-    public int getCommission() {
-        return tax;
-    }
-
-
-    public int getCashback(){
-        return cashback;
-    }
 
     public int getBalance() {
         return balance;
@@ -47,9 +27,7 @@ public abstract class PaymentType {
         this.expense = expense;
     }
 
-    public void setCashback(int cashback) {
-        this.cashback = cashback;
-    }
+
 
     public void setSavings(int savings) {
         this.savings = savings;
@@ -62,6 +40,24 @@ public abstract class PaymentType {
     public void setIncome(int income) {
         this.income = income;
     }
+
+
+
+    public abstract void add(int money);
+
+    public abstract void deduct(int money);
+
+    public abstract void save(int money);
+
+    public abstract String toString();
+
+    public void printCurrentBalance() {
+        System.out.println("Current balance: " + getBalance());
+        System.out.println("Income: " + getIncome());
+        System.out.println("Savings: " + getSavings());
+    }
+
+
 
 }
 
