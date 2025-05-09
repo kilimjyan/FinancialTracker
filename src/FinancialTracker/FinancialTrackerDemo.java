@@ -1,8 +1,7 @@
 package FinancialTracker;
 
 import models.*;
-import services.ReportingService;
-import utils.*;
+import utils.CSVUtil;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -68,8 +67,7 @@ public class FinancialTrackerDemo {
                         int saveAmount = scanner.nextInt();
                         PaymentType savePaymentMethod = selectPaymentMethod(scanner, user);
                         if (savePaymentMethod != null) {
-                            savePaymentMethod.save(saveAmount);
-                            System.out.println("Saved successfully!");
+                            handleTransaction(scanner, user, transactions, true, "save");
                         }
                         break;
 
@@ -109,10 +107,10 @@ public class FinancialTrackerDemo {
                 }
             } catch (InputMismatchException e) {
                 System.err.println("Invalid input detected. Please enter a valid number.");
-                scanner.next(); // Clear the invalid input
+                scanner.next();
             } catch (Exception e) {
                 System.err.println("An unexpected error occurred: " + e.getMessage());
-                e.printStackTrace(); // Optional: for debugging purposes
+
             }
         }
     }
@@ -174,10 +172,10 @@ public class FinancialTrackerDemo {
                 System.out.println("Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + (isExpense ? "from " : "to ") + paymentMethodInput);
         } catch (InputMismatchException e) {
             System.err.println("Invalid input. Transaction canceled.");
-            scanner.next(); // Clear invalid input
+            scanner.next();
         } catch (Exception e) {
             System.err.println("An error occurred while processing the transaction: " + e.getMessage());
-            e.printStackTrace(); // Optional: for debugging
+            e.printStackTrace();
         }
     }
 
@@ -217,7 +215,10 @@ public class FinancialTrackerDemo {
     }
 
     private boolean isEmailValid(String mail) {
-        if (!(mail.contains(".") || mail.contains("@"))) {
+        if (!(mail.contains("."))) {
+            return false;
+        }
+        if (!(mail.contains("@"))) {
             return false;
         }
         int indexAt = mail.lastIndexOf("@");

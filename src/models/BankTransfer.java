@@ -2,7 +2,15 @@ package models;
 
 public class BankTransfer extends PaymentType {
     private int tax;
+    private int totalTax;
 
+    public int getTotalTax() {
+        return totalTax;
+    }
+
+    public void setTotalTax(int totalTax) {
+        this.totalTax = totalTax;
+    }
 
     public void setTax(int tax) {
         this.tax = tax;
@@ -46,7 +54,8 @@ public class BankTransfer extends PaymentType {
 
     public int generateTax(int money) {
         if (money > 100000) {
-            setTax(getTax() + (int) (money * 0.0005));
+            setTax(getTax() + (int) (money * 0.05));
+            totalTax += getTax();
         }
         return getTax();
     }
@@ -54,8 +63,9 @@ public class BankTransfer extends PaymentType {
      public void printCurrentBalance() {
          System.out.println("Current balance: " + getBalance());
          System.out.println("Income: " + getIncome());
+         System.out.println("Expense: " + getExpense());
          System.out.println("Savings: " + getSavings());
-         System.out.println("Tax: " + tax);
+         System.out.println("Tax: " + totalTax);
      }
 
 

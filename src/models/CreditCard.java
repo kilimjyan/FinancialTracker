@@ -4,6 +4,17 @@ public class CreditCard extends PaymentType {
     private String bankName;
     private String creditCardId;
     private int cashback;
+    private int totalCashback;
+
+
+    public int getTotalCashback() {
+        return totalCashback;
+    }
+
+    public void setTotalCashback(int totalCashback) {
+        this.totalCashback = totalCashback;
+    }
+
     public String getBankName() {
         return bankName;
     }
@@ -32,6 +43,7 @@ public class CreditCard extends PaymentType {
         super();
         this.bankName=bankname;
         this.creditCardId=creditCardId;
+
     }
 
 
@@ -47,6 +59,7 @@ public class CreditCard extends PaymentType {
         }
         if (money > 50000) {
             setExpense(getExpense() + money - generateCashback(money));
+            setCashback(0);
             setBalance(getBalance() - (int) (money * 0.95));
         } else {
             setExpense(getExpense() + money);
@@ -71,7 +84,8 @@ public class CreditCard extends PaymentType {
 
     public int generateCashback(int money) {
         if (money > 50000) {
-            setCashback(getCashback() + (int) (money * 0.05));
+            setCashback(getCashback() + (int) (money * 0.03));
+            totalCashback += getCashback();
         }
         return getCashback();
     }
@@ -80,8 +94,9 @@ public class CreditCard extends PaymentType {
     public void printCurrentBalance() {
         System.out.println("Current balance: " + getBalance());
         System.out.println("Income: " + getIncome());
+        System.out.println("Expense: " + getExpense());
         System.out.println("Savings: " + getSavings());
-        System.out.println("Cashback: " + cashback);
+        System.out.println("Cashback: " + totalCashback);
     }
 
 

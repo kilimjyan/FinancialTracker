@@ -1,8 +1,9 @@
 package services;
-
+import java.util.*;
 import models.*;
 
 import java.util.List;
+
 
 public class ReportingService {
     public void generateMonthlyReport(List<Transaction> transactions, User user) {
@@ -19,13 +20,13 @@ public class ReportingService {
                 if (transaction.getPaymentType().equals(method) &&
                         transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL) {
 
-                    // Categorize based on transaction type
+
                     if (transaction.getType().equals("add")) {
-                        totalIncome += transaction.getAmount();
+                        totalIncome += transaction.getPaymentType().getIncome();
                     } else if (transaction.getType().equals("deduct")) {
-                        totalExpense += transaction.getAmount();
+                        totalExpense += transaction.getPaymentType().getExpense();
                     } else if (transaction.getType().equals("save")) {
-                        totalSavings += transaction.getAmount();
+                        totalSavings += transaction.getPaymentType().getSavings();
                     }
                 }
             }
@@ -36,10 +37,10 @@ public class ReportingService {
             report.append("  Total Savings: ").append(totalSavings).append("\n");
             report.append("  Total Balance: ").append(method.getBalance()).append("\n");
             if(method instanceof BankTransfer){
-                report.append("  Tax Paid: ").append(((BankTransfer)method).getTax()).append("\n");
+                report.append("  Tax Paid: ").append(((BankTransfer)method).getTotalTax()).append("\n");
             }
             if (method instanceof CreditCard) {
-                report.append("  Cashback Earned: ").append(((CreditCard)method).getCashback()).append("\n");
+                report.append("  Cashback Earned: ").append(((CreditCard)method).getTotalCashback()).append("\n");
             }
             report.append("---------------------------------\n");
         }

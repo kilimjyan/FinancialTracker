@@ -1,7 +1,6 @@
 package utils;
 
 import exceptions.CSVExportException;
-import models.Transaction;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

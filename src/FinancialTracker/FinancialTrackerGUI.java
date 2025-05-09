@@ -2,7 +2,6 @@ package FinancialTracker;
 
 import exceptions.CSVExportException;
 import models.*;
-import services.ReportingService;
 import utils.CSVUtil;
 
 import javax.swing.*;
@@ -180,10 +179,10 @@ public class FinancialTrackerGUI extends JFrame {
             message.append("  Expenses: ").append(method.getExpense()).append("\n");
             message.append("  Savings: ").append(method.getSavings()).append("\n");
             if(method instanceof BankTransfer){
-                message.append("  Tax Paid: ").append(((BankTransfer)method).getTax()).append("\n");
+                message.append("  Tax Paid: ").append(((BankTransfer)method).getTotalTax()).append("\n");
             }
             if (method instanceof CreditCard) {
-                message.append("  Cashback Earned: ").append(((CreditCard)method).getCashback()).append("\n");
+                message.append("  Cashback Earned: ").append(((CreditCard)method).getTotalCashback()).append("\n");
             }
         }
         JOptionPane.showMessageDialog(this, message.toString());
@@ -203,13 +202,13 @@ public class FinancialTrackerGUI extends JFrame {
                 if (transaction.getPaymentType().equals(method) &&
                         transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL) {
 
-                    // Categorize based on transaction type
+
                     if (transaction.getType().equals("add")) {
-                        totalIncome += transaction.getAmount();
+                        totalIncome += transaction.getPaymentType().getIncome();
                     } else if (transaction.getType().equals("deduct")) {
-                        totalExpense += transaction.getAmount();
+                        totalExpense += transaction.getPaymentType().getExpense();
                     } else if (transaction.getType().equals("save")) {
-                        totalSavings += transaction.getAmount();
+                        totalSavings += transaction.getPaymentType().getSavings();
                     }
                 }
             }
@@ -220,10 +219,10 @@ public class FinancialTrackerGUI extends JFrame {
             report.append("  Total Savings: ").append(totalSavings).append("\n");
             report.append("  Total Balance: ").append(method.getBalance()).append("\n");
             if(method instanceof BankTransfer){
-                report.append("  Tax Paid: ").append(((BankTransfer)method).getTax()).append("\n");
+                report.append("  Tax Paid: ").append(((BankTransfer)method).getTotalTax()).append("\n");
             }
             if (method instanceof CreditCard) {
-                report.append("  Cashback Earned: ").append(((CreditCard)method).getCashback()).append("\n");
+                report.append("  Cashback Earned: ").append(((CreditCard)method).getTotalCashback()).append("\n");
             }
             report.append("---------------------------------\n");
         }
@@ -246,7 +245,10 @@ public class FinancialTrackerGUI extends JFrame {
     }
 
     private boolean isEmailValid(String mail) {
-        if (!(mail.contains(".") || mail.contains("@"))) {
+        if (!(mail.contains("."))) {
+            return false;
+        }
+        if (!(mail.contains("@"))) {
             return false;
         }
         int indexAt = mail.lastIndexOf("@");
