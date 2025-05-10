@@ -1,8 +1,6 @@
 package FinancialTracker;
 
-import exceptions.FinancialTrackerException;
-import exceptions.InsufficientFundsException;
-import exceptions.ValidationException;
+import exceptions.*;
 import models.*;
 import services.ReportingService;
 import utils.CSVUtil;
@@ -76,10 +74,7 @@ public class FinancialTrackerDemo {
                         break;
 
                     case 4:
-                        for (PaymentType method : user.getPaymentMethods()) {
-                            System.out.println("Payment method: " + method);
-                            method.printCurrentBalance();
-                        }
+                        printCurrentBalances(user);
                         break;
 
                     case 5:
@@ -98,8 +93,28 @@ public class FinancialTrackerDemo {
                         String bankName = scanner.next();
                         System.out.println("Enter your credit card ID:");
                         String creditCardId = scanner.next();
-                        user.addPaymentMethod(new CreditCard(bankName, creditCardId));
-                        System.out.println("Credit card for " + bankName + " added successfully.");
+                        try {
+                            if (creditCardId.length() != 16) {
+                                throw new InvalidCreditCardException("Credit card ID must be exactly 16 digits long.");
+                            }
+                            if (!creditCardId.matches("\\d+")) {
+                                throw new InvalidCreditCardException("Credit card ID must contain only digits.");
+                            }
+                            
+                            // Check for duplicate credit card
+                            for (PaymentType method : user.getPaymentMethods()) {
+                                if (method instanceof CreditCard && ((CreditCard) method).getCreditCardId().equals(creditCardId)) {
+                                    throw new DuplicateCreditCardException("A credit card with ID " + creditCardId + " already exists.");
+                                }
+                            }
+                            
+                            user.addPaymentMethod(new CreditCard(bankName, creditCardId));
+                            System.out.println("Credit card for " + bankName + " added successfully.");
+                        } catch (InvalidCreditCardException e) {
+                            System.err.println(e.getMessage());
+                        } catch (DuplicateCreditCardException e) {
+                            System.err.println(e.getMessage());
+                        }
                         break;
 
                     case 8:
@@ -173,7 +188,7 @@ public class FinancialTrackerDemo {
                 transactions.add(transaction);
 
                 if(transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL)
-                    System.out.println("Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + (isExpense ? "from " : "to ") + paymentMethodInput);
+                    System.out.println("Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + " AMD" + (isExpense ? " from " : " to ") + paymentMethodInput);
             } catch (InsufficientFundsException e) {
                 System.err.println("Transaction failed: " + e.getMessage());
             } catch (ValidationException e) {
@@ -239,5 +254,22 @@ public class FinancialTrackerDemo {
             return false;
         }
         return true;
+    }
+
+    private static void printCurrentBalances(User user) {
+        for (PaymentType method : user.getPaymentMethods()) {
+            System.out.println("Payment method: " + method);
+            System.out.println("Current balance: " + method.getBalance() + " AMD");
+            System.out.println("Income: " + method.getIncome() + " AMD");
+            System.out.println("Expense: " + method.getExpense() + " AMD");
+            System.out.println("Savings: " + method.getSavings() + " AMD");
+            if(method instanceof BankTransfer){
+                System.out.println("Tax Paid: " + ((BankTransfer)method).getTotalTax() + " AMD");
+            }
+            if (method instanceof CreditCard) {
+                System.out.println("Cashback Earned: " + ((CreditCard)method).getTotalCashback() + " AMD");
+            }
+            System.out.println();
+        }
     }
 }

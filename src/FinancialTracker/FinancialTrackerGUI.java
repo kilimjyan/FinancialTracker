@@ -1,9 +1,6 @@
 package FinancialTracker;
 
-import exceptions.CSVExportException;
-import exceptions.FinancialTrackerException;
-import exceptions.InsufficientFundsException;
-import exceptions.ValidationException;
+import exceptions.*;
 import models.*;
 import services.ReportingService;
 import utils.CSVUtil;
@@ -123,7 +120,7 @@ public class FinancialTrackerGUI extends JFrame {
             transaction.setType(action);
             transactions.add(transaction);
             if(transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL)
-                JOptionPane.showMessageDialog(this, "Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + (isExpense ? " from " : " to ") + selectedPaymentMethod);
+                JOptionPane.showMessageDialog(this, "Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + " AMD" + (isExpense ? " from " : " to ") + selectedPaymentMethod);
             else{
                 JOptionPane.showMessageDialog(this, "Transaction failed.");
             }
@@ -172,23 +169,43 @@ public class FinancialTrackerGUI extends JFrame {
             return;
         }
 
-        user.addPaymentMethod(new CreditCard(bankName, creditCardId));
-        JOptionPane.showMessageDialog(this, "Credit card for " + bankName + " added successfully.");
+        try {
+            if (creditCardId.length() != 16) {
+                throw new InvalidCreditCardException("Credit card ID must be exactly 16 digits long.");
+            }
+            if (!creditCardId.matches("\\d+")) {
+                throw new InvalidCreditCardException("Credit card ID must contain only digits.");
+            }
+            
+            // Check for duplicate credit card
+            for (PaymentType method : user.getPaymentMethods()) {
+                if (method instanceof CreditCard && ((CreditCard) method).getCreditCardId().equals(creditCardId)) {
+                    throw new DuplicateCreditCardException("A credit card with ID " + creditCardId + " already exists.");
+                }
+            }
+            
+            user.addPaymentMethod(new CreditCard(bankName, creditCardId));
+            JOptionPane.showMessageDialog(this, "Credit card for " + bankName + " added successfully.");
+        } catch (InvalidCreditCardException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Invalid Credit Card", JOptionPane.ERROR_MESSAGE);
+        } catch (DuplicateCreditCardException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Duplicate Credit Card", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void printCurrentBalances() {
         StringBuilder message = new StringBuilder("Current Balances:\n");
         for (PaymentType method : user.getPaymentMethods()) {
             message.append("Payment method: ").append(method).append("\n");
-            message.append("  Current balance: ").append(method.getBalance()).append("\n");
-            message.append("  Income: ").append(method.getIncome()).append("\n");
-            message.append("  Expenses: ").append(method.getExpense()).append("\n");
-            message.append("  Savings: ").append(method.getSavings()).append("\n");
+            message.append("  Current balance: ").append(method.getBalance()).append(" AMD\n");
+            message.append("  Income: ").append(method.getIncome()).append(" AMD\n");
+            message.append("  Expenses: ").append(method.getExpense()).append(" AMD\n");
+            message.append("  Savings: ").append(method.getSavings()).append(" AMD\n");
             if(method instanceof BankTransfer){
-                message.append("  Tax Paid: ").append(((BankTransfer)method).getTotalTax()).append("\n");
+                message.append("  Tax Paid: ").append(((BankTransfer)method).getTotalTax()).append(" AMD\n");
             }
             if (method instanceof CreditCard) {
-                message.append("  Cashback Earned: ").append(((CreditCard)method).getTotalCashback()).append("\n");
+                message.append("  Cashback Earned: ").append(((CreditCard)method).getTotalCashback()).append(" AMD\n");
             }
         }
         JOptionPane.showMessageDialog(this, message.toString());
@@ -220,15 +237,15 @@ public class FinancialTrackerGUI extends JFrame {
             }
 
             report.append("\nPayment Method: ").append(method.toString()).append("\n");
-            report.append("  Total Income: ").append(totalIncome).append("\n");
-            report.append("  Total Expenses: ").append(totalExpense).append("\n");
-            report.append("  Total Savings: ").append(totalSavings).append("\n");
-            report.append("  Total Balance: ").append(method.getBalance()).append("\n");
+            report.append("  Total Income: ").append(totalIncome).append(" AMD\n");
+            report.append("  Total Expenses: ").append(totalExpense).append(" AMD\n");
+            report.append("  Total Savings: ").append(totalSavings).append(" AMD\n");
+            report.append("  Total Balance: ").append(method.getBalance()).append(" AMD\n");
             if(method instanceof BankTransfer){
-                report.append("  Tax Paid: ").append(((BankTransfer)method).getTotalTax()).append("\n");
+                report.append("  Tax Paid: ").append(((BankTransfer)method).getTotalTax()).append(" AMD\n");
             }
             if (method instanceof CreditCard) {
-                report.append("  Cashback Earned: ").append(((CreditCard)method).getTotalCashback()).append("\n");
+                report.append("  Cashback Earned: ").append(((CreditCard)method).getTotalCashback()).append(" AMD\n");
             }
             report.append("---------------------------------\n");
         }
