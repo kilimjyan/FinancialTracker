@@ -1,8 +1,5 @@
 package models;
 
-import exceptions.FinancialTrackerException;
-import exceptions.InsufficientFundsException;
-
 import java.time.LocalDateTime;
 
 public class Transaction {
@@ -81,20 +78,16 @@ public class Transaction {
         return amount;
     }
 
-    public void executeTransaction(boolean isExpense) throws InsufficientFundsException, FinancialTrackerException {
+    public void executeTransaction(boolean isExpense) {
         try {
             if (isExpense) {
-                paymentType.deduct(amount);
+                ( paymentType).deduct(amount);
             } else {
-                paymentType.add(amount);
+                ( paymentType).add(amount);
             }
             status = TransactionStatus.SUCCESSFUL;
-        } catch (InsufficientFundsException e) {
-            status = TransactionStatus.FAILED;
-            throw e; // Re-throw to let the caller handle it
         } catch (Exception e) {
             status = TransactionStatus.FAILED;
-            throw new FinancialTrackerException("Transaction failed: " + e.getMessage(), e);
         }
     }
 

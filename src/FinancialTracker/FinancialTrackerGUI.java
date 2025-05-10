@@ -9,8 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDate;
 import java.util.ArrayList;
-
 public class FinancialTrackerGUI extends JFrame {
     private JTextField usernameField;
     private JTextField emailField;
@@ -129,8 +129,6 @@ public class FinancialTrackerGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Invalid amount. Please enter a valid number.");
         } catch (ValidationException e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
-        } catch (InsufficientFundsException e) {
-            JOptionPane.showMessageDialog(this, "Transaction failed: " + e.getMessage());
         } catch (FinancialTrackerException e) {
             JOptionPane.showMessageDialog(this, "Transaction failed: " + e.getMessage());
         }
@@ -214,8 +212,9 @@ public class FinancialTrackerGUI extends JFrame {
 
     private void generateMonthlyReport() {
         StringBuilder report = new StringBuilder();
-        report.append("Monthly Report by Payment Method\n");
+        report.append("Monthly Report of " + LocalDate.now().getMonth() + " " + LocalDate.now().getYear() + "\n");
         report.append("---------------------------------\n");
+
 
         for (PaymentType method : user.getPaymentMethods()) {
             int totalIncome = 0;

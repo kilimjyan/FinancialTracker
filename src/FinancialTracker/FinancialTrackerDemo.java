@@ -1,6 +1,8 @@
 package FinancialTracker;
 
-import exceptions.*;
+import exceptions.DuplicateCreditCardException;
+import exceptions.FinancialTrackerException;
+import exceptions.InvalidCreditCardException;
 import models.*;
 import services.ReportingService;
 import utils.CSVUtil;
@@ -134,7 +136,7 @@ public class FinancialTrackerDemo {
         }
     }
 
-    private static void handleTransaction(Scanner scanner, User user, ArrayList<Transaction> transactions, boolean isExpense, String action) {
+    private static void handleTransaction(Scanner scanner, User user, ArrayList<Transaction> transactions, boolean isExpense, String action) throws FinancialTrackerException {
         try {
             System.out.println("Please specify the payment method: enter BANK, CARD, or CASH");
             String paymentMethodInput = scanner.next();
@@ -182,20 +184,12 @@ public class FinancialTrackerDemo {
                 return;
             }
             Transaction transaction = new Transaction("TXN" + System.currentTimeMillis(), selectedPaymentMethod, amount);
-            try {
-                transaction.executeTransaction(isExpense);
-                transaction.setType(action);
-                transactions.add(transaction);
+            transaction.executeTransaction(isExpense);
+            transaction.setType(action);
+            transactions.add(transaction);
 
-                if(transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL)
-                    System.out.println("Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + " AMD" + (isExpense ? " from " : " to ") + paymentMethodInput);
-            } catch (InsufficientFundsException e) {
-                System.err.println("Transaction failed: " + e.getMessage());
-            } catch (ValidationException e) {
-                System.err.println("Transaction failed: " + e.getMessage());
-            } catch (FinancialTrackerException e) {
-                System.err.println("Transaction failed: " + e.getMessage());
-            }
+            if(transaction.getStatus() == Transaction.TransactionStatus.SUCCESSFUL)
+                System.out.println("Transaction successful! " + (isExpense ? "Deducted " : "Added ") + amount + " AMD" + (isExpense ? " from " : " to ") + paymentMethodInput);
         } catch (InputMismatchException e) {
             System.err.println("Invalid input. Transaction canceled.");
             scanner.next();
