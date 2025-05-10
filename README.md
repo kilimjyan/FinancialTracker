@@ -1,3 +1,5 @@
+Link to the presentation
+https://www.canva.com/design/DAGm9x-d5Wo/jihpSz5ccdduQnt0w4SUBA/edit?utm_content=DAGm9x-d5Wo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
 # Financial Tracker
 
 A Java-based financial management application that allows users to track their income, expenses, and savings across different payment methods including bank transfers, credit cards, and cash.
