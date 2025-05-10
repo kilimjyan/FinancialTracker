@@ -102,11 +102,10 @@ public class FinancialTrackerDemo {
                             if (!creditCardId.matches("\\d+")) {
                                 throw new InvalidCreditCardException("Credit card ID must contain only digits.");
                             }
-                            
-                            // Check for duplicate credit card
+
                             for (PaymentType method : user.getPaymentMethods()) {
-                                if (method instanceof CreditCard && ((CreditCard) method).getCreditCardId().equals(creditCardId)) {
-                                    throw new DuplicateCreditCardException("A credit card with ID " + creditCardId + " already exists.");
+                                if (method instanceof CreditCard && ((CreditCard) method).getCreditCardId().equals(creditCardId) && ((CreditCard) method).getBankName().equals(bankName)) {
+                                    throw new DuplicateCreditCardException("A credit card with ID " + creditCardId + "from" + ((CreditCard) method).getBankName() +" already exists.");
                                 }
                             }
                             
@@ -229,7 +228,7 @@ public class FinancialTrackerDemo {
             return methods.get(methodChoice - 1);
         } catch (InputMismatchException e) {
             System.err.println("Invalid input. Please try again.");
-            scanner.next(); // Clear invalid input
+            scanner.next();
             return null;
         }
     }

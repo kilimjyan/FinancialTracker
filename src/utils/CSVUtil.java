@@ -17,10 +17,10 @@ public class CSVUtil {
         try (PrintWriter outputStream = new PrintWriter(new FileOutputStream(fileName + ".csv"))) {
             System.out.println("Writing to file.");
 
-            // Write header
+
             outputStream.println("Transaction ID , Payment Method, Amount, Date , Status");
 
-            // Write transactions
+
             for (Transaction transaction : transactions) {
                 outputStream.println(transaction.toCSV());
             }

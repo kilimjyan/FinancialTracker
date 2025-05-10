@@ -57,11 +57,11 @@ public class User {
         paymentMethods.add(paymentType);
     }
 
-    public void addTransaction(Transaction transaction) {
+    protected void addTransaction(Transaction transaction) {
         transactions.add(transaction);
     }
 
-    public void reset() {
+    protected void reset() {
         paymentMethods.clear();
         transactions.clear();
     }

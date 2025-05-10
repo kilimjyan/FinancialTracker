@@ -96,7 +96,7 @@ public class CreditCard extends PaymentType {
     }
 
 
-    public int generateCashback(int money) {
+    protected int generateCashback(int money) {
         if (money > 50000) {
             int cashbackAmount = (int) (money * 0.03);
             setCashback(cashbackAmount);
@@ -107,7 +107,7 @@ public class CreditCard extends PaymentType {
     }
 
     @Override
-    public void printCurrentBalance() {
+    protected void printCurrentBalance() {
         System.out.println("Current balance: " + getBalance());
         System.out.println("Income: " + getIncome());
         System.out.println("Expense: " + getExpense());

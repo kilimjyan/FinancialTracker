@@ -53,7 +53,7 @@ public abstract class PaymentType {
 
     public abstract String toString();
 
-    public void printCurrentBalance() {
+    protected void printCurrentBalance() {
         System.out.println("Current balance: " + getBalance());
         System.out.println("Income: " + getIncome());
         System.out.println("Expense: " + getExpense());

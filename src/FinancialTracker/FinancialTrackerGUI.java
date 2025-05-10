@@ -176,10 +176,10 @@ public class FinancialTrackerGUI extends JFrame {
                 throw new InvalidCreditCardException("Credit card ID must contain only digits.");
             }
             
-            // Check for duplicate credit card
+
             for (PaymentType method : user.getPaymentMethods()) {
-                if (method instanceof CreditCard && ((CreditCard) method).getCreditCardId().equals(creditCardId)) {
-                    throw new DuplicateCreditCardException("A credit card with ID " + creditCardId + " already exists.");
+                if (method instanceof CreditCard && ((CreditCard) method).getCreditCardId().equals(creditCardId) && ((CreditCard) method).getBankName().equals(bankName)) {
+                    throw new DuplicateCreditCardException("A credit card with ID " + creditCardId + "from" + ((CreditCard) method).getBankName() +" already exists.");
                 }
             }
             

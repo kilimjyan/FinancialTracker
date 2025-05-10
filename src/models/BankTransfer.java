@@ -68,7 +68,7 @@ public class BankTransfer extends PaymentType {
         return "Bank Transfer";
     }
 
-    public int generateTax(int money) {
+    protected int generateTax(int money) {
         if (money > 100000) {
             setTax(getTax() + (int) (money * 0.05));
             totalTax += getTax();
@@ -76,7 +76,7 @@ public class BankTransfer extends PaymentType {
         return getTax();
     }
     @Override
-    public void printCurrentBalance() {
+    protected void printCurrentBalance() {
         System.out.println("Current balance: " + getBalance());
         System.out.println("Income: " + getIncome());
         System.out.println("Expense: " + getExpense());
